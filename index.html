@@ -854,10 +854,31 @@ function setSort(type, el){
 }
 
 // ═══════════════════════════
+// 🔑 PASSWORD GATE
+// Change this to your own password
+// ═══════════════════════════
+const VAULT_PASSWORD = 'auguxt2025';  // ← change this to your own password
+let isAdmin = sessionStorage.getItem('lv_admin') === 'true';
+
+function checkAdmin(){
+  if(isAdmin) return true;
+  const pw = prompt('🔐 Enter password to make changes:');
+  if(pw === VAULT_PASSWORD){
+    isAdmin = true;
+    sessionStorage.setItem('lv_admin','true');
+    showToast('✅ Admin access granted');
+    return true;
+  }
+  showToast('❌ Wrong password');
+  return false;
+}
+
+// ═══════════════════════════
 // ACTIONS
 // ═══════════════════════════
 async function toggleFav(id, e){
   e.stopPropagation();
+  if(!checkAdmin()) return;
   const l = links.find(x=>x.id===id);
   if(!l) return;
   l.fav=!l.fav;
@@ -874,6 +895,7 @@ function copyLink(url, e){
 
 function editLink(id, e){
   e.stopPropagation();
+  if(!checkAdmin()) return;
   const l = links.find(x=>x.id===id);
   if(!l) return;
   editingId=id;
@@ -887,6 +909,7 @@ function editLink(id, e){
 
 async function deleteLink(id, e){
   e.stopPropagation();
+  if(!checkAdmin()) return;
   if(!confirm('Delete this link?')) return;
   const backup=[...links];
   links=links.filter(x=>x.id!==id);
@@ -900,6 +923,7 @@ async function deleteLink(id, e){
 // MODAL
 // ═══════════════════════════
 function openModal(preCat){
+  if(!checkAdmin()) return;
   editingId=null;
   document.getElementById('modalTitle').textContent='ADD LINK';
   document.getElementById('fName').value='';
