@@ -4,78 +4,67 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LinkVault</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --ink:#0a0a0f;
-  --paper:#f5f2ec;
-  --paper2:#eee9df;
-  --card:#fff;
-  --border:#d4cfc5;
-  --text:#1a1a24;
-  --muted:#7a7570;
-  --accent:#ff4d2e;
-  --accent2:#2d5af7;
-  --gold:#c9a84c;
-  --green:#1a8c5e;
-  --purple:#7c3aed;
-  --mono:'JetBrains Mono',monospace;
+  --ink:#0a0a0f;--paper:#f5f2ec;--paper2:#eee9df;--card:#fff;
+  --border:#d4cfc5;--text:#1a1a24;--muted:#7a7570;
+  --accent:#ff4d2e;--accent2:#2d5af7;--gold:#c9a84c;
+  --green:#1a8c5e;--purple:#7c3aed;--mono:'JetBrains Mono',monospace;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
-
-/* ─── NOISE TEXTURE OVERLAY ─── */
 body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:9999;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-size:128px 128px}
 
-/* ─── APP SHELL ─── */
-#app{height:100vh;overflow:hidden;position:relative}
+/* ─── LOADING BAR ─── */
+#loadingBar{display:none;position:fixed;top:0;left:0;right:0;height:3px;z-index:10000;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));
+  background-size:200% 100%;animation:loadSlide 1.2s linear infinite}
+@keyframes loadSlide{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ─── PAGES ─── */
+/* ─── APP ─── */
+#app{height:100vh;overflow:hidden;position:relative}
 .page{position:absolute;inset:0;overflow-y:auto;transition:transform .5s cubic-bezier(.77,0,.18,1),opacity .4s ease;will-change:transform,opacity}
 .page.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
 .page.slide-left{transform:translateX(-8%);opacity:0;pointer-events:none}
-
-/* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-/* ══════════════════════════════
-   HOME PAGE
-══════════════════════════════ */
-#home{background:var(--paper)}
-
-.home-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:28px 48px 0;border-bottom:2px solid var(--ink);
-  position:sticky;top:0;background:var(--paper);z-index:100;
-}
+/* ─── HOME HEADER ─── */
+.home-header{display:flex;align-items:center;justify-content:space-between;padding:28px 48px 0;
+  border-bottom:2px solid var(--ink);position:sticky;top:0;background:var(--paper);z-index:100}
 .brand{display:flex;align-items:baseline;gap:10px}
 .brand-name{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:var(--ink);line-height:1}
 .brand-tag{font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px;border:1px solid var(--border);padding:3px 8px;border-radius:2px}
-.home-nav{display:flex;align-items:center;gap:16px}
+.home-nav{display:flex;align-items:center;gap:12px}
 .search-wrap{position:relative}
 .home-search{padding:9px 14px 9px 36px;border:1.5px solid var(--border);border-radius:4px;background:var(--card);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:260px;transition:border-color .2s,box-shadow .2s}
 .home-search:focus{outline:none;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
 .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
-.btn-add{background:var(--ink);color:var(--paper);border:none;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border-radius:4px;cursor:pointer;letter-spacing:.3px;transition:background .2s,transform .1s;display:flex;align-items:center;gap:6px}
+.btn-add{background:var(--ink);color:var(--paper);border:none;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border-radius:4px;cursor:pointer;transition:background .2s,transform .1s;display:flex;align-items:center;gap:6px}
 .btn-add:hover{background:#2a2a35;transform:translateY(-1px)}
-.btn-add:active{transform:translateY(0)}
-.home-stats-bar{display:flex;align-items:center;gap:32px;padding:12px 48px;border-bottom:1px solid var(--border);background:var(--paper2)}
-.stat-item{display:flex;align-items:center;gap:8px}
+
+/* ─── LOGIN BTN ─── */
+.btn-login{background:transparent;color:var(--text);border:1.5px solid var(--border);padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border-radius:4px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-login:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.btn-login.logged-in{border-color:var(--green);color:var(--green)}
+.btn-login.logged-in:hover{background:var(--green);color:#fff}
+
+/* ─── STATS BAR ─── */
+.home-stats-bar{display:flex;align-items:center;gap:32px;padding:12px 48px;border-bottom:1px solid var(--border);background:var(--paper2);overflow-x:auto}
+.stat-item{display:flex;align-items:center;gap:8px;white-space:nowrap}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--ink)}
 .stat-lbl{font-size:12px;color:var(--muted);letter-spacing:.3px}
-.stat-sep{width:1px;height:24px;background:var(--border)}
+.stat-sep{width:1px;height:24px;background:var(--border);flex-shrink:0}
+.db-badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:2px;border:1px solid;letter-spacing:.5px}
+.db-badge.online{color:var(--green);border-color:var(--green);background:rgba(26,140,94,.08)}
+.db-badge.offline{color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.08)}
 
-/* ─── HERO BAND ─── */
-.hero-band{
-  padding:40px 48px 32px;
-  display:flex;align-items:flex-end;justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
+/* ─── HERO ─── */
+.hero-band{padding:40px 48px 32px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border)}
 .hero-title{font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:.95;letter-spacing:2px;color:var(--ink)}
 .hero-title span{color:var(--accent)}
 .hero-sub{font-size:14px;color:var(--muted);max-width:280px;line-height:1.7;text-align:right}
@@ -86,17 +75,7 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 .cats-grid-label{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:12px}
 .cats-grid-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0}
-
-.cat-card{
-  border:1px solid var(--border);
-  margin:-1px 0 0 -1px;
-  padding:28px 28px 24px;
-  cursor:pointer;
-  background:var(--card);
-  position:relative;
-  overflow:hidden;
-  transition:z-index 0s;
-}
+.cat-card{border:1px solid var(--border);margin:-1px 0 0 -1px;padding:28px 28px 24px;cursor:pointer;background:var(--card);position:relative;overflow:hidden;transition:z-index 0s;animation:fadeUp .4s ease both}
 .cat-card::before{content:'';position:absolute;inset:0;background:var(--cat-accent,var(--ink));transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.77,0,.18,1)}
 .cat-card:hover{z-index:2}
 .cat-card:hover::before{transform:scaleX(1)}
@@ -107,75 +86,33 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 .cat-card:hover .cat-emoji{transform:scale(1.2) rotate(-5deg)}
 .cat-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--ink);margin-bottom:6px}
 .cat-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;min-height:36px}
-.cat-count{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:11px;color:var(--muted);
-  border:1px solid var(--border);padding:4px 10px;border-radius:2px;
-  transition:border-color .3s,color .3s
-}
+.cat-count{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--border);padding:4px 10px;border-radius:2px;transition:border-color .3s,color .3s}
 .cat-arrow{position:absolute;bottom:24px;right:24px;font-size:18px;opacity:0;transform:translateX(-6px);transition:opacity .3s,transform .3s}
 .cat-card:hover .cat-arrow{opacity:1;transform:translateX(0)}
 
-/* ══════════════════════════════
-   CATEGORY PAGE
-══════════════════════════════ */
+/* ─── CAT PAGE ─── */
 #catpage{background:var(--paper)}
-
-.cat-header{
-  display:flex;align-items:center;gap:0;
-  border-bottom:2px solid var(--ink);
-  position:sticky;top:0;background:var(--paper);z-index:100;
-}
-.back-btn{
-  display:flex;align-items:center;gap:8px;
-  padding:20px 28px;
-  border-right:2px solid var(--ink);
-  cursor:pointer;font-size:13px;font-weight:600;
-  color:var(--text);background:transparent;border-top:none;border-bottom:none;border-left:none;
-  font-family:'DM Sans',sans-serif;
-  transition:background .2s,color .2s;
-  white-space:nowrap;
-}
+.cat-header{display:flex;align-items:center;border-bottom:2px solid var(--ink);position:sticky;top:0;background:var(--paper);z-index:100}
+.back-btn{display:flex;align-items:center;gap:8px;padding:20px 28px;border-right:2px solid var(--ink);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);background:transparent;border-top:none;border-bottom:none;border-left:none;font-family:'DM Sans',sans-serif;transition:background .2s,color .2s;white-space:nowrap}
 .back-btn:hover{background:var(--ink);color:var(--paper)}
 .cat-header-mid{flex:1;padding:20px 32px;display:flex;align-items:center;gap:14px;min-width:0}
 .cat-header-emoji{font-size:28px;line-height:1}
-.cat-header-info{min-width:0}
 .cat-header-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1.5px;color:var(--ink);line-height:1}
 .cat-header-count{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .cat-header-right{display:flex;align-items:center;gap:10px;padding:16px 28px;border-left:2px solid var(--ink)}
-.cat-search{padding:9px 14px 9px 36px;border:1.5px solid var(--border);border-radius:4px;background:var(--card);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:220px;transition:border-color .2s,box-shadow .2s}
-.cat-search:focus{outline:none;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
 .cat-search-wrap{position:relative}
+.cat-search{padding:9px 14px 9px 36px;border:1.5px solid var(--border);border-radius:4px;background:var(--card);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:200px;transition:border-color .2s,box-shadow .2s}
+.cat-search:focus{outline:none;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
 .cat-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
-
-/* ─── SORT BAR ─── */
-.sort-bar{
-  display:flex;align-items:center;gap:0;
-  border-bottom:1px solid var(--border);
-  padding:0 48px;
-  background:var(--paper2);
-  overflow-x:auto;
-}
-.sort-btn{
-  padding:12px 18px;font-size:12px;font-weight:600;font-family:var(--mono);
-  border:none;background:transparent;cursor:pointer;color:var(--muted);
-  letter-spacing:.5px;text-transform:uppercase;
-  border-bottom:2px solid transparent;margin-bottom:-1px;
-  transition:color .2s,border-color .2s;white-space:nowrap;
-}
+.sort-bar{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);padding:0 48px;background:var(--paper2);overflow-x:auto}
+.sort-btn{padding:12px 18px;font-size:12px;font-weight:600;font-family:var(--mono);border:none;background:transparent;cursor:pointer;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;white-space:nowrap}
 .sort-btn.active,.sort-btn:hover{color:var(--ink);border-bottom-color:var(--ink)}
 .sort-sep{width:1px;height:20px;background:var(--border);margin:0 4px;flex-shrink:0}
-
-/* ─── LINKS GRID ─── */
 .links-area{padding:36px 48px 60px}
 .links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
 
-.link-card{
-  background:var(--card);border:1.5px solid var(--border);border-radius:6px;
-  padding:20px;position:relative;overflow:hidden;
-  transition:border-color .25s,box-shadow .25s,transform .25s;
-  display:flex;flex-direction:column;gap:10px;
-}
+/* ─── LINK CARD ─── */
+.link-card{background:var(--card);border:1.5px solid var(--border);border-radius:6px;padding:20px;position:relative;overflow:hidden;transition:border-color .25s,box-shadow .25s,transform .25s;display:flex;flex-direction:column;gap:10px;animation:fadeUp .35s ease both}
 .link-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--cat-accent,var(--ink));transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
 .link-card:hover{border-color:var(--ink);box-shadow:4px 4px 0 var(--ink);transform:translate(-2px,-2px)}
 .link-card:hover::after{transform:scaleX(1)}
@@ -185,42 +122,32 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 .lc-fav:hover{transform:scale(1.3)}
 .lc-desc{font-size:13px;color:var(--muted);line-height:1.6}
 .lc-url-row{display:flex;align-items:center;gap:8px;margin-top:auto}
-.lc-url{
-  flex:1;font-family:var(--mono);font-size:11px;color:var(--muted);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  text-decoration:none;padding:7px 10px;
-  background:var(--paper2);border-radius:3px;border:1px solid var(--border);
-  transition:background .2s,color .2s;display:block;
-}
+.lc-url{flex:1;font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;padding:7px 10px;background:var(--paper2);border-radius:3px;border:1px solid var(--border);transition:background .2s,color .2s;display:block}
 .lc-url:hover{background:var(--ink);color:#fff}
 .lc-actions{display:flex;gap:4px;flex-shrink:0}
 .lc-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:3px;cursor:pointer;background:var(--paper2);color:var(--muted);font-size:13px;text-decoration:none;transition:background .2s,color .2s,border-color .2s}
 .lc-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-
-/* ─── FAVORITES BADGE ─── */
-.fav-badge{position:absolute;top:16px;right:16px;font-size:12px}
+.admin-only{display:none}
+.is-admin .admin-only{display:flex}
 
 /* ─── EMPTY STATE ─── */
-.empty-cat{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:12px;color:var(--muted)}
+.empty-cat{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:12px;color:var(--muted);grid-column:1/-1}
 .empty-cat-icon{font-size:48px;opacity:.4}
 .empty-cat-txt{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--border)}
 
-/* ══════════════════════════════
-   MODAL
-══════════════════════════════ */
-.overlay{position:fixed;inset:0;background:rgba(10,10,15,.6);backdrop-filter:blur(3px);z-index:500;display:none;align-items:center;justify-content:center}
+/* ─── MODAL ─── */
+.overlay{position:fixed;inset:0;background:rgba(10,10,15,.7);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:36px;width:90%;max-width:500px;box-shadow:8px 8px 0 var(--ink);animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
+.modal{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:36px;width:90%;max-width:480px;box-shadow:8px 8px 0 var(--ink);animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(.88) translateY(16px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px}
-.modal-close{background:none;border:1.5px solid var(--border);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,color .2s}
+.modal-close{background:none;border:1.5px solid var(--border);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,color .2s,border-color .2s}
 .modal-close:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .form-row{margin-bottom:18px}
 .form-lbl{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;font-family:var(--mono)}
 .form-ctrl{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:4px;background:var(--card);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color .2s,box-shadow .2s}
 .form-ctrl:focus{outline:none;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
-.form-ctrl textarea{resize:vertical;min-height:80px}
 textarea.form-ctrl{resize:vertical;min-height:80px}
 select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%237a7570'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .modal-footer{display:flex;gap:10px;margin-top:28px}
@@ -228,55 +155,61 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
 .btn-cancel:hover{background:var(--paper2)}
 .btn-save{flex:2;padding:12px;border:2px solid var(--ink);border-radius:4px;background:var(--ink);color:var(--paper);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s,transform .1s}
 .btn-save:hover{background:#2a2a35;transform:translateY(-1px)}
+.btn-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* ─── LOGIN MODAL ─── */
+.login-modal{max-width:400px}
+.login-icon{font-size:48px;text-align:center;margin-bottom:8px}
+.login-modal .modal-title{text-align:center;font-size:32px}
+.login-error{color:var(--accent);font-size:13px;text-align:center;margin-top:8px;min-height:20px;font-family:var(--mono)}
+.admin-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:2px;border:1px solid var(--green);color:var(--green);background:rgba(26,140,94,.08)}
 
 /* ─── TOAST ─── */
-.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:10px 20px;border-radius:4px;font-size:13px;font-weight:600;font-family:var(--mono);z-index:600;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:10px 20px;border-radius:4px;font-size:13px;font-weight:600;font-family:var(--mono);z-index:600;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ─── ANIMATIONS ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.cat-card{animation:fadeUp .4s ease both}
-.link-card{animation:fadeUp .35s ease both}
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:768px){
   .home-header{padding:16px 20px}
   .hero-band{padding:24px 20px;flex-direction:column;align-items:flex-start;gap:12px}
-  .hero-title{font-size:52px}
+  .hero-title{font-size:48px}
   .hero-sub{text-align:left;max-width:100%}
   .cats-grid-wrap{padding:24px 20px}
-  .home-stats-bar{padding:10px 20px;gap:16px;overflow-x:auto}
-  .back-btn{padding:16px 16px}
-  .cat-header-mid{padding:16px 16px}
+  .home-stats-bar{padding:10px 20px;gap:16px}
+  .back-btn{padding:14px 16px}
+  .cat-header-mid{padding:14px 16px}
   .cat-header-right{padding:10px 12px}
-  .cat-search{width:150px}
+  .cat-search{width:140px}
   .links-area{padding:20px 16px}
   .sort-bar{padding:0 16px}
 }
 </style>
 </head>
 <body>
-<div id="loadingBar" style="display:none;position:fixed;top:0;left:0;right:0;height:3px;z-index:10000;background:linear-gradient(90deg,#ff4d2e,#2d5af7,#ff4d2e);background-size:200% 100%;animation:loadingSlide 1.2s linear infinite"></div>
-<style>
-@keyframes loadingSlide{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.db-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:2px;border:1px solid;letter-spacing:.5px;cursor:default}
-.db-badge.online{color:#1a8c5e;border-color:#1a8c5e;background:rgba(26,140,94,.08)}
-.db-badge.offline{color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.08)}
-</style>
-<div id="app">
+
+<div id="loadingBar"></div>
+
+<div id="app" class="">
+
   <!-- ══ HOME PAGE ══ -->
   <div class="page" id="home">
     <header class="home-header">
       <div class="brand">
         <span class="brand-name">LINKVAULT</span>
-        <span class="brand-tag">~125 free resources</span>
+        <span class="brand-tag">free resources</span>
       </div>
       <nav class="home-nav">
         <div class="search-wrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="home-search" id="homeSearch" placeholder="Search all 180+ links…" oninput="handleHomeSearch(this.value)">
+          <input class="home-search" id="homeSearch" placeholder="Search all links… (Ctrl+K)" oninput="handleHomeSearch(this.value)">
         </div>
-        <button class="btn-add" onclick="openModal()">
+        <button class="btn-login" id="loginBtn" onclick="handleLoginClick()">
+          🔑 Login
+        </button>
+        <button class="btn-add admin-only" onclick="openLinkModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Link
         </button>
@@ -284,15 +217,15 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
     </header>
 
     <div class="home-stats-bar">
-      <div class="stat-item"><span class="stat-num" id="s-total">180</span><span class="stat-lbl">total links</span></div>
+      <div class="stat-item"><span class="stat-num" id="s-total">—</span><span class="stat-lbl">total links</span></div>
       <div class="stat-sep"></div>
-      <div class="stat-item"><span class="stat-num" id="s-cats">15</span><span class="stat-lbl">categories</span></div>
+      <div class="stat-item"><span class="stat-num" id="s-cats">16</span><span class="stat-lbl">categories</span></div>
       <div class="stat-sep"></div>
-      <div class="stat-item"><span class="stat-num" id="s-favs">0</span><span class="stat-lbl">favorites</span></div>
+      <div class="stat-item"><span class="stat-num" id="s-favs">—</span><span class="stat-lbl">favorites</span></div>
       <div class="stat-sep"></div>
       <div class="stat-item"><span class="stat-num">100%</span><span class="stat-lbl">free</span></div>
       <div class="stat-sep"></div>
-      <div class="stat-item"><span class="db-badge offline" id="dbBadge">⬤ LOCAL</span></div>
+      <div class="stat-item"><span class="db-badge offline" id="dbBadge">⬤ LOADING</span></div>
     </div>
 
     <div class="hero-band">
@@ -315,9 +248,9 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
       </button>
       <div class="cat-header-mid">
         <span class="cat-header-emoji" id="cpEmoji">🖥️</span>
-        <div class="cat-header-info">
-          <div class="cat-header-name" id="cpName">Dev Infra</div>
-          <div class="cat-header-count" id="cpCount">8 links</div>
+        <div>
+          <div class="cat-header-name" id="cpName">Category</div>
+          <div class="cat-header-count" id="cpCount">0 links</div>
         </div>
       </div>
       <div class="cat-header-right">
@@ -325,7 +258,7 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input class="cat-search" id="catSearch" placeholder="Filter links…" oninput="renderCatLinks()">
         </div>
-        <button class="btn-add" onclick="openModal(currentCat)">
+        <button class="btn-add admin-only" onclick="openLinkModal(currentCat)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add
         </button>
@@ -344,12 +277,36 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
   </div>
 </div>
 
-<!-- ══ MODAL ══ -->
-<div class="overlay" id="overlay" onclick="overlayClick(event)">
+<!-- ══ LOGIN MODAL ══ -->
+<div class="overlay" id="loginOverlay" onclick="closeLoginModal(event)">
+  <div class="modal login-modal">
+    <div class="login-icon">🔐</div>
+    <div class="modal-hd" style="flex-direction:column;align-items:center;gap:4px">
+      <div class="modal-title">ADMIN LOGIN</div>
+      <div style="font-size:12px;color:var(--muted);font-family:var(--mono)">Only you can edit links</div>
+    </div>
+    <div class="form-row">
+      <label class="form-lbl">Username</label>
+      <input class="form-ctrl" id="loginUser" type="text" placeholder="your username" autocomplete="username">
+    </div>
+    <div class="form-row">
+      <label class="form-lbl">Password</label>
+      <input class="form-ctrl" id="loginPass" type="password" placeholder="your password" autocomplete="current-password">
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="document.getElementById('loginOverlay').classList.remove('open')">Cancel</button>
+      <button class="btn-save" id="loginSubmitBtn" onclick="submitLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LINK MODAL ══ -->
+<div class="overlay" id="linkOverlay" onclick="closeLinkModal(event)">
   <div class="modal">
     <div class="modal-hd">
-      <div class="modal-title" id="modalTitle">ADD LINK</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title" id="linkModalTitle">ADD LINK</div>
+      <button class="modal-close" onclick="document.getElementById('linkOverlay').classList.remove('open')">✕</button>
     </div>
     <div class="form-row">
       <label class="form-lbl">Link Name *</label>
@@ -368,8 +325,8 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
       <textarea class="form-ctrl" id="fDesc" placeholder="What is this tool for?"></textarea>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveLink()">Save Link</button>
+      <button class="btn-cancel" onclick="document.getElementById('linkOverlay').classList.remove('open')">Cancel</button>
+      <button class="btn-save" id="linkSaveBtn" onclick="saveLink()">Save Link</button>
     </div>
   </div>
 </div>
@@ -378,29 +335,29 @@ select.form-ctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg
 
 <script>
 // ═══════════════════════════
-// DATA
+// CATEGORIES
 // ═══════════════════════════
 const CATS = [
-  {id:'dev',emoji:'🖥️',name:'Dev Infra',desc:'Hosting, DNS, databases & backend tools',color:'#2d5af7'},
-  {id:'util',emoji:'🛠️',name:'Utilities',desc:'PDF editors, converters, email & daily tools',color:'#1a8c5e'},
-  {id:'sec',emoji:'🔐',name:'Security',desc:'Hacking labs, CTF, privacy & recon',color:'#ff4d2e'},
-  {id:'learn',emoji:'🎓',name:'Learning',desc:'Free courses from MIT, IIT, Google & more',color:'#c9a84c'},
-  {id:'ai',emoji:'🤖',name:'AI Tools',desc:'AI assistants, generators & research tools',color:'#7c3aed'},
-  {id:'ent',emoji:'🎬',name:'Entertainment',desc:'Movies, anime, radio & SFX libraries',color:'#e11d48'},
-  {id:'life',emoji:'🧩',name:'Lifestyle',desc:'Weather, flight tracking, PC builds & more',color:'#0891b2'},
-  {id:'code',emoji:'💻',name:'Coding',desc:'Practice, docs, references & competitive coding',color:'#059669'},
-  {id:'py',emoji:'🐍',name:'Python',desc:'Python tutorials, challenges & visual debuggers',color:'#eab308'},
-  {id:'cloud',emoji:'☁️',name:'Cloud & DevOps',desc:'Free cloud tiers, CI/CD & serverless databases',color:'#6366f1'},
-  {id:'prod',emoji:'🧠',name:'Productivity',desc:'Note-taking, knowledge graphs & flashcards',color:'#f97316'},
-  {id:'design',emoji:'🎨',name:'Design',desc:'Figma, diagramming & browser-based editors',color:'#db2777'},
-  {id:'web',emoji:'🌐',name:'Web & API Tools',desc:'API testing, mock servers & webhook tools',color:'#0d9488'},
-  {id:'india',emoji:'🇮🇳',name:'India-Friendly',desc:'IIT robotics, virtual labs & SWAYAM Prabha',color:'#ff7c00'},
-  {id:'career',emoji:'🌍',name:'Career',desc:'Scholarships, edX audits & EU exchange programs',color:'#8b5cf6'},
-  {id:'wall',emoji:'🖼️',name:'Wallpaper',desc:'HD photos, stock images & color palettes',color:'#64748b'},
+  {id:'dev',  emoji:'🖥️', name:'Dev Infra',       desc:'Hosting, DNS, databases & backend tools',        color:'#2d5af7'},
+  {id:'util', emoji:'🛠️', name:'Utilities',        desc:'PDF editors, converters, email & daily tools',   color:'#1a8c5e'},
+  {id:'sec',  emoji:'🔐', name:'Security',          desc:'Hacking labs, CTF, privacy & recon',             color:'#ff4d2e'},
+  {id:'learn',emoji:'🎓', name:'Learning',          desc:'Free courses from MIT, IIT, Google & more',      color:'#c9a84c'},
+  {id:'ai',   emoji:'🤖', name:'AI Tools',          desc:'AI assistants, generators & research tools',     color:'#7c3aed'},
+  {id:'ent',  emoji:'🎬', name:'Entertainment',     desc:'Movies, anime, radio & SFX libraries',           color:'#e11d48'},
+  {id:'life', emoji:'🧩', name:'Lifestyle',         desc:'Weather, flight tracking, PC builds & more',     color:'#0891b2'},
+  {id:'code', emoji:'💻', name:'Coding',            desc:'Practice, docs, references & competitive coding',color:'#059669'},
+  {id:'py',   emoji:'🐍', name:'Python',            desc:'Python tutorials, challenges & visual debuggers', color:'#eab308'},
+  {id:'cloud',emoji:'☁️', name:'Cloud & DevOps',    desc:'Free cloud tiers, CI/CD & serverless databases', color:'#6366f1'},
+  {id:'prod', emoji:'🧠', name:'Productivity',      desc:'Note-taking, knowledge graphs & flashcards',     color:'#f97316'},
+  {id:'design',emoji:'🎨',name:'Design',            desc:'Figma, diagramming & browser-based editors',     color:'#db2777'},
+  {id:'web',  emoji:'🌐', name:'Web & API Tools',   desc:'API testing, mock servers & webhook tools',      color:'#0d9488'},
+  {id:'india',emoji:'🇮🇳', name:'India-Friendly',   desc:'IIT robotics, virtual labs & SWAYAM Prabha',     color:'#ff7c00'},
+  {id:'career',emoji:'🌍',name:'Career',            desc:'Scholarships, edX audits & EU exchange programs',color:'#8b5cf6'},
+  {id:'wall', emoji:'🖼️', name:'Wallpaper',         desc:'HD photos, stock images & color palettes',       color:'#64748b'},
 ];
 
-const ALL_LINKS = [
-  // Dev Infra
+// DEFAULT LINKS (seeded on first load)
+const DEFAULT_LINKS = [
   {id:'1',name:'VPS.tc',url:'https://vps.tc',cat:'dev',desc:'Cheap VPS hosting for projects',fav:false},
   {id:'2',name:'FreeDomain',url:'https://getfreedomain.name',cat:'dev',desc:'Get free .tk/.ml/.ga domains',fav:false},
   {id:'3',name:'Render',url:'https://render.com',cat:'dev',desc:'Free cloud app hosting',fav:true},
@@ -408,7 +365,6 @@ const ALL_LINKS = [
   {id:'5',name:'Cloudflare',url:'https://cloudflare.com',cat:'dev',desc:'Free DNS + security for domains',fav:false},
   {id:'6',name:'Supabase',url:'https://supabase.com',cat:'dev',desc:'Open-source Firebase: Postgres + Auth + Storage',fav:true},
   {id:'7',name:'Mailcow',url:'https://mailcow.email',cat:'dev',desc:'Self-hosted email server (Docker-based)',fav:false},
-  // Utilities
   {id:'8',name:'Sejda PDF',url:'https://sejda.com/pdf-editor',cat:'util',desc:'Edit/sign PDFs online (free tier)',fav:false},
   {id:'9',name:'LightPDF',url:'https://lightpdf.com',cat:'util',desc:'Free PDF converter/editor',fav:false},
   {id:'10',name:'Convertio',url:'https://convertio.co',cat:'util',desc:'Convert any file format (free tier)',fav:false},
@@ -425,13 +381,12 @@ const ALL_LINKS = [
   {id:'21',name:'RecordScreen',url:'https://recordscreen.io',cat:'util',desc:'Record screen from browser — no install needed',fav:false},
   {id:'22',name:'Google Docs',url:'https://docs.google.com',cat:'util',desc:'Edit DOC/DOCX online + auto-save + collaborate',fav:true},
   {id:'23',name:'Word Online',url:'https://office.com/launch/word',cat:'util',desc:'Official Microsoft Word in browser (free)',fav:false},
-  {id:'24',name:'Zoho Writer',url:'https://writer.zoho.com',cat:'util',desc:'Clean, distraction-free DOC editor (no ads)',fav:false},
-  {id:'25',name:'ExifTool Online',url:'https://exiftool.org',cat:'util',desc:'View/edit image metadata (privacy + forensics)',fav:false},
+  {id:'24',name:'Zoho Writer',url:'https://writer.zoho.com',cat:'util',desc:'Clean, distraction-free DOC editor',fav:false},
+  {id:'25',name:'ExifTool',url:'https://exiftool.org',cat:'util',desc:'View/edit image metadata (privacy + forensics)',fav:false},
   {id:'26',name:'GTmetrix',url:'https://gtmetrix.com',cat:'util',desc:'Test website speed + performance (free tier)',fav:false},
   {id:'27',name:'BuiltWith',url:'https://builtwith.com',cat:'util',desc:'See what tech a website uses (free lookups)',fav:false},
   {id:'28',name:'DNSDumpster',url:'https://dnsdumpster.com',cat:'util',desc:'Free DNS recon + subdomain discovery',fav:false},
   {id:'29',name:'Shodan',url:'https://shodan.io',cat:'util',desc:'Search engine for Internet-connected devices',fav:false},
-  // Security
   {id:'30',name:'Hacksplaining',url:'https://hacksplaining.com/lessons',cat:'sec',desc:'Fun, beginner-friendly intro to hacking concepts',fav:false},
   {id:'31',name:'LetsDefend',url:'https://letsdefend.io',cat:'sec',desc:'SOC/incident response labs (free tier)',fav:false},
   {id:'32',name:'EC-Council',url:'https://eccouncil.org',cat:'sec',desc:'Official security certifications (free resources)',fav:false},
@@ -441,287 +396,326 @@ const ALL_LINKS = [
   {id:'36',name:'PrivacyGuides',url:'https://privacyguides.org',cat:'sec',desc:'Best privacy tools & practices (community-driven)',fav:false},
   {id:'37',name:'PortSwigger Academy',url:'https://portswigger.net/web-security',cat:'sec',desc:'Free web security training (Burp Suite labs)',fav:true},
   {id:'38',name:'OverTheWire',url:'https://overthewire.org',cat:'sec',desc:'Learn security via command-line wargames',fav:true},
-  {id:'39',name:'PicoCTF',url:'https://picoctf.org',cat:'sec',desc:'Beginner-friendly CTF challenges (high school/college)',fav:false},
+  {id:'39',name:'PicoCTF',url:'https://picoctf.org',cat:'sec',desc:'Beginner-friendly CTF challenges',fav:false},
   {id:'40',name:'Cybrary',url:'https://cybrary.it',cat:'sec',desc:'Free cybersecurity courses + career paths',fav:false},
-  {id:'41',name:'Security Journey',url:'https://securityjourney.com',cat:'sec',desc:'Free security awareness + secure coding training',fav:false},
+  {id:'41',name:'Security Journey',url:'https://securityjourney.com',cat:'sec',desc:'Free security awareness training',fav:false},
   {id:'42',name:'VulnHub',url:'https://vulnhub.com',cat:'sec',desc:'Download vulnerable VMs to practice offline',fav:false},
-  // Learning
   {id:'43',name:'IBM Skills',url:'https://skills.yourlearning.ibm.com',cat:'learn',desc:'Free IBM tech courses (AI, cloud, data)',fav:false},
-  {id:'44',name:'AWS Training',url:'https://aws.amazon.com/training',cat:'learn',desc:'Learn AWS cloud + prepare for certs (free tier)',fav:false},
+  {id:'44',name:'AWS Training',url:'https://aws.amazon.com/training',cat:'learn',desc:'Learn AWS cloud + prepare for certs',fav:false},
   {id:'45',name:'Grow Google',url:'https://grow.google',cat:'learn',desc:"Google's free digital career skills courses",fav:false},
-  {id:'46',name:'Photoskop',url:'https://photoskop.com',cat:'learn',desc:'Learn photography online (free courses)',fav:false},
-  {id:'47',name:'NPTEL',url:'https://nptel.ac.in',cat:'learn',desc:'Free IIT/IISc video courses (India, certificates)',fav:true},
-  {id:'48',name:'SWAYAM',url:'https://swayam.gov.in',cat:'learn',desc:'Govt. of India free online courses',fav:false},
-  {id:'49',name:'Khan Academy',url:'https://khanacademy.org',cat:'learn',desc:'Free world-class education for all ages',fav:true},
-  {id:'50',name:'MIT OCW',url:'https://ocw.mit.edu',cat:'learn',desc:'Free MIT course materials (real syllabus)',fav:true},
-  {id:'51',name:'Coursera',url:'https://coursera.org',cat:'learn',desc:'Audit top university courses for free',fav:false},
-  {id:'52',name:'Brilliant',url:'https://brilliant.org',cat:'learn',desc:'Learn math/CS/science by doing (free tier)',fav:false},
-  {id:'53',name:'DIKSHA',url:'https://diksha.gov.in',cat:'learn',desc:'Free school courses (NCERT + more, India)',fav:false},
-  {id:'54',name:'OpenLibrary',url:'https://openlibrary.org',cat:'learn',desc:'Borrow/read 3M+ free digital books',fav:false},
-  {id:'55',name:'SignSchool',url:'https://signschool.com',cat:'learn',desc:'Learn sign language (ASL) interactively',fav:false},
-  {id:'56',name:'YouLearn AI',url:'https://app.youlearn.ai',cat:'learn',desc:'AI tutor: Turn PDFs/YouTube into notes & quizzes',fav:false},
-  {id:'57',name:'AWS Skill Builder',url:'https://skillbuilder.aws',cat:'learn',desc:'Free AWS courses + cloud fundamentals',fav:false},
-  {id:'58',name:'Google Cloud Skills',url:'https://cloudskillsboost.google',cat:'learn',desc:'Free GCP courses + hands-on labs',fav:false},
-  {id:'59',name:'Microsoft Learn',url:'https://learn.microsoft.com',cat:'learn',desc:'Free Azure training + certifications (with free exams)',fav:false},
-  {id:'60',name:'KodeKloud',url:'https://kodekloud.com',cat:'learn',desc:'Free Kubernetes/DevOps hands-on labs',fav:false},
-  {id:'61',name:'EdClub Typing',url:'https://www.edclub.com/sportal/program-3/176.play',cat:'learn',desc:'Fun typing practice + keyboard skills',fav:false},
-  // AI Tools
-  {id:'62',name:'Kimi AI',url:'https://kimi.com',cat:'ai',desc:'Make PPTs + AI chat assistant (free tier)',fav:false},
-  {id:'63',name:'Gamma',url:'https://gamma.app',cat:'ai',desc:'Create beautiful PPTs/docs with AI (free tier)',fav:true},
-  {id:'64',name:'Perplexity',url:'https://perplexity.ai',cat:'ai',desc:'AI research assistant with cited sources (free)',fav:true},
+  {id:'46',name:'NPTEL',url:'https://nptel.ac.in',cat:'learn',desc:'Free IIT/IISc video courses (India, certificates)',fav:true},
+  {id:'47',name:'SWAYAM',url:'https://swayam.gov.in',cat:'learn',desc:'Govt. of India free online courses',fav:false},
+  {id:'48',name:'Khan Academy',url:'https://khanacademy.org',cat:'learn',desc:'Free world-class education for all ages',fav:true},
+  {id:'49',name:'MIT OCW',url:'https://ocw.mit.edu',cat:'learn',desc:'Free MIT course materials (real syllabus)',fav:true},
+  {id:'50',name:'Coursera',url:'https://coursera.org',cat:'learn',desc:'Audit top university courses for free',fav:false},
+  {id:'51',name:'Brilliant',url:'https://brilliant.org',cat:'learn',desc:'Learn math/CS/science by doing (free tier)',fav:false},
+  {id:'52',name:'DIKSHA',url:'https://diksha.gov.in',cat:'learn',desc:'Free school courses (NCERT + more, India)',fav:false},
+  {id:'53',name:'OpenLibrary',url:'https://openlibrary.org',cat:'learn',desc:'Borrow/read 3M+ free digital books',fav:false},
+  {id:'54',name:'SignSchool',url:'https://signschool.com',cat:'learn',desc:'Learn sign language (ASL) interactively',fav:false},
+  {id:'55',name:'YouLearn AI',url:'https://app.youlearn.ai',cat:'learn',desc:'AI tutor: Turn PDFs/YouTube into notes',fav:false},
+  {id:'56',name:'AWS Skill Builder',url:'https://skillbuilder.aws',cat:'learn',desc:'Free AWS courses + cloud fundamentals',fav:false},
+  {id:'57',name:'Google Cloud Skills',url:'https://cloudskillsboost.google',cat:'learn',desc:'Free GCP courses + hands-on labs',fav:false},
+  {id:'58',name:'Microsoft Learn',url:'https://learn.microsoft.com',cat:'learn',desc:'Free Azure training + certifications',fav:false},
+  {id:'59',name:'KodeKloud',url:'https://kodekloud.com',cat:'learn',desc:'Free Kubernetes/DevOps hands-on labs',fav:false},
+  {id:'60',name:'EdClub Typing',url:'https://www.edclub.com/sportal/program-3/176.play',cat:'learn',desc:'Fun typing practice + keyboard skills',fav:false},
+  {id:'61',name:'Gamma',url:'https://gamma.app',cat:'ai',desc:'Create beautiful PPTs/docs with AI (free tier)',fav:true},
+  {id:'62',name:'Perplexity',url:'https://perplexity.ai',cat:'ai',desc:'AI research assistant with cited sources (free)',fav:true},
+  {id:'63',name:'NotebookLM',url:'https://notebooklm.google',cat:'ai',desc:'Google AI: Chat with your PDFs, notes, YouTube',fav:true},
+  {id:'64',name:'Kimi AI',url:'https://kimi.com',cat:'ai',desc:'Make PPTs + AI chat assistant (free tier)',fav:false},
   {id:'65',name:'Consensus',url:'https://consensus.app',cat:'ai',desc:'AI search across 200M+ research papers',fav:false},
   {id:'66',name:'Phind',url:'https://phind.com',cat:'ai',desc:'AI search engine optimized for developers',fav:false},
   {id:'67',name:'Toolify',url:'https://toolify.ai',cat:'ai',desc:'Browse & discover 10,000+ AI tools',fav:false},
   {id:'68',name:'Futurepedia',url:'https://futurepedia.io',cat:'ai',desc:'Daily updated AI tools directory',fav:false},
   {id:'69',name:'Napkin AI',url:'https://app.napkin.ai',cat:'ai',desc:'Turn notes into visual diagrams with AI',fav:false},
   {id:'70',name:'Visily',url:'https://visily.ai',cat:'ai',desc:'AI-powered UI/wireframe design tool',fav:false},
-  {id:'71',name:'MindGrasp',url:'https://mindgrasp.ai',cat:'ai',desc:'AI study helper: summarize, quiz, take notes',fav:false},
-  {id:'72',name:'Undetectable',url:'https://undetectable.ai',cat:'ai',desc:'Humanize AI text to bypass detectors (free tier)',fav:false},
-  {id:'73',name:'TWA Humanizer',url:'https://app.twaingpt.com/humanizer',cat:'ai',desc:'Make AI text sound human-written',fav:false},
-  {id:'74',name:'FlexClip BG',url:'https://www.flexclip.com/ai/video-background-remover',cat:'ai',desc:'Remove video backgrounds with AI (free tier)',fav:false},
-  {id:'75',name:'MagicHour',url:'https://magichour.ai',cat:'ai',desc:'AI video generation & editing',fav:false},
-  {id:'76',name:'SkyReels',url:'https://skyreels.ai',cat:'ai',desc:'Create AI-powered short videos',fav:false},
-  {id:'77',name:'Rosebud',url:'https://rosebud.ai',cat:'ai',desc:'AI game/video maker for creators',fav:false},
-  {id:'78',name:'Wegic AI',url:'https://wegic.ai',cat:'ai',desc:'Build websites using AI prompts',fav:false},
-  {id:'79',name:'ChatEdu',url:'https://chatedu.io',cat:'ai',desc:'AI tutor for learning subjects',fav:false},
-  {id:'80',name:'FMHY',url:'https://fmhy.net',cat:'ai',desc:'🔥 MASTER HUB: Free resources for AI, media, books',fav:true},
-  {id:'81',name:'Emergent AI',url:'https://app.emergent.sh',cat:'ai',desc:'Build full-stack apps via chat — no code needed',fav:false},
-  {id:'82',name:'LLM Apps',url:'https://github.com/Shubhamsaboo/awesome-llm-apps',cat:'ai',desc:'Curated list of 100+ open-source AI/LLM projects',fav:false},
-  {id:'83',name:'NotebookLM',url:'https://notebooklm.google',cat:'ai',desc:'Google AI: Chat with your PDFs, notes, YouTube',fav:true},
-  {id:'84',name:'Taplio',url:'https://app.taplio.com',cat:'ai',desc:'AI LinkedIn growth: schedule posts, analytics',fav:false},
-  {id:'85',name:'Arena AI',url:'https://arena.ai',cat:'ai',desc:'Compare & benchmark AI models',fav:false},
-  {id:'86',name:'Mixboard',url:'https://mixboard.google.com/projects',cat:'ai',desc:'Google AI visual brainstorming: mind maps, mood boards',fav:false},
-  {id:'87',name:'Yupp AI',url:'https://yupp.ai',cat:'ai',desc:'AI assistant for notes, summaries, learning',fav:false},
-  // Entertainment
-  {id:'88',name:'AnimeDekho',url:'https://animedekho.in/home',cat:'ent',desc:'Stream anime free (India-friendly)',fav:false},
-  {id:'89',name:'PStream',url:'https://pstream.mov',cat:'ent',desc:'Stream TV shows/movies (verify legality in region)',fav:false},
-  {id:'90',name:'Flixer',url:'https://flixer.sh',cat:'ent',desc:'Watch movies/TV free (verify legality in region)',fav:false},
-  {id:'91',name:'IMDB Movies',url:'https://imdb.com/chart/top',cat:'ent',desc:'Top-rated movies of all time',fav:false},
-  {id:'92',name:'IMDB TV',url:'https://imdb.com/chart/toptv',cat:'ent',desc:'Top-rated TV shows',fav:false},
-  {id:'93',name:'Letterboxd',url:'https://letterboxd.com',cat:'ent',desc:'Track, rate & review movies you watch',fav:false},
-  {id:'94',name:'Serializd',url:'https://serializd.com',cat:'ent',desc:'Letterboxd for TV series: track & review shows',fav:false},
-  {id:'95',name:'MyAnimeList',url:'https://myanimelist.net',cat:'ent',desc:'Track anime, discover new shows, join community',fav:false},
-  {id:'96',name:'Radio Garden',url:'https://radio.garden',cat:'ent',desc:'Listen to live radio stations worldwide',fav:false},
-  {id:'97',name:'MotionBGs',url:'https://motionbgs.com',cat:'ent',desc:'Free motion backgrounds for videos',fav:false},
-  {id:'98',name:'PlayPhrase',url:'https://playphrase.me',cat:'ent',desc:'Search any phrase → instantly play movie/TV clips',fav:false},
-  {id:'99',name:'MyInstants',url:'https://myinstants.com',cat:'ent',desc:'Play meme sounds & viral audio clips',fav:false},
-  {id:'100',name:'Freesound',url:'https://freesound.org',cat:'ent',desc:'Free Creative Commons audio samples',fav:false},
-  {id:'101',name:'ZapSplat',url:'https://zapsplat.com',cat:'ent',desc:'Free SFX for videos, games, podcasts',fav:false},
-  {id:'102',name:'Mixkit',url:'https://mixkit.co',cat:'ent',desc:'Free music + SFX + stock videos',fav:false},
-  {id:'103',name:'Pixabay Audio',url:'https://pixabay.com/sound-effects',cat:'ent',desc:'Royalty-free music & sound effects',fav:false},
-  // Lifestyle
-  {id:'104',name:'Windy',url:'https://windy.com',cat:'life',desc:'Live weather maps, wind, rain forecast',fav:false},
-  {id:'105',name:'BuildCores',url:'https://buildcores.com',cat:'life',desc:'Plan PC builds + check part compatibility',fav:false},
-  {id:'106',name:'HackTheMenu',url:'https://hackthemenu.com',cat:'life',desc:'Fast food secret menus & deals',fav:false},
-  {id:'107',name:'Runable',url:'https://runable.com',cat:'life',desc:'Running training plans & coaching',fav:false},
-  {id:'108',name:'FlightRadar24',url:'https://flightradar24.com',cat:'life',desc:'Track any plane in real-time worldwide',fav:false},
-  {id:'109',name:'Wolfram Alpha',url:'https://wolframalpha.com',cat:'life',desc:'Computational knowledge engine (free tier)',fav:false},
-  // Coding
-  {id:'110',name:'Exercism',url:'https://exercism.org',cat:'code',desc:'Practice coding + get mentor feedback (100% free)',fav:false},
-  {id:'111',name:'freeCodeCamp',url:'https://freecodecamp.org',cat:'code',desc:'Free full-stack coding curriculum + certifications',fav:true},
-  {id:'112',name:'CodeDex',url:'https://codedex.io/home',cat:'code',desc:'Beginner-friendly, gamified coding lessons',fav:false},
-  {id:'113',name:'Coddy',url:'https://coddy.tech/onboard',cat:'code',desc:'Interactive coding lessons (Duolingo-style)',fav:false},
-  {id:'114',name:'LeetCode',url:'https://leetcode.com',cat:'code',desc:'Practice coding interview questions (free tier)',fav:true},
-  {id:'115',name:'ReactBits',url:'https://reactbits.dev',cat:'code',desc:'Copy-paste React components & snippets',fav:false},
-  {id:'116',name:'Natively',url:'https://natively.dev',cat:'code',desc:'Learn native mobile app development',fav:false},
-  {id:'117',name:'Zoo Design',url:'https://zoo.dev/design-studio',cat:'code',desc:'Convert Figma designs to code automatically',fav:false},
-  {id:'118',name:'QuickRef',url:'https://quickref.me',cat:'code',desc:'Minimalist programming cheat sheets',fav:false},
-  {id:'119',name:'DevDocs',url:'https://devdocs.io',cat:'code',desc:'All programming docs in one fast, searchable UI',fav:true},
-  {id:'120',name:'Regex101',url:'https://regex101.com',cat:'code',desc:'Test & debug regex with explanations',fav:false},
-  {id:'121',name:'GitHub',url:'https://github.com',cat:'code',desc:'Host code, collaborate, build your portfolio',fav:true},
-  {id:'122',name:'Replit',url:'https://replit.com',cat:'code',desc:'Code, run, collaborate in browser (free tier)',fav:false},
-  {id:'123',name:'CodePen',url:'https://codepen.io',cat:'code',desc:'Front-end playground + inspiration',fav:false},
-  {id:'124',name:'Stack Overflow',url:'https://stackoverflow.com',cat:'code',desc:'Get coding answers from developers worldwide',fav:true},
-  {id:'125',name:'MDN Web Docs',url:'https://developer.mozilla.org',cat:'code',desc:'Official, accurate HTML/CSS/JS reference',fav:true},
-  {id:'126',name:'GeeksforGeeks',url:'https://geeksforgeeks.org',cat:'code',desc:'Coding tutorials + interview prep (free articles)',fav:false},
-  {id:'127',name:'HackerRank',url:'https://hackerrank.com',cat:'code',desc:'Coding challenges + company practice (free tier)',fav:false},
-  {id:'128',name:'CodeChef',url:'https://codechef.com',cat:'code',desc:'Competitive programming (Indian platform, free)',fav:false},
-  {id:'129',name:'W3Schools',url:'https://w3schools.com',cat:'code',desc:'Web dev tutorials + live code editor',fav:false},
-  {id:'130',name:'Programiz',url:'https://programiz.com',cat:'code',desc:'Learn Python/C++/Java + online compiler',fav:false},
-  {id:'131',name:'The Odin Project',url:'https://theodinproject.com',cat:'code',desc:'Full-stack open-source curriculum (project-based)',fav:false},
-  {id:'132',name:'Roadmap.sh',url:'https://roadmap.sh',cat:'code',desc:'Visual learning paths for developers',fav:true},
-  {id:'133',name:'HTTPie',url:'https://httpie.io',cat:'code',desc:'User-friendly API testing: CLI + desktop app',fav:false},
-  {id:'134',name:'Public APIs',url:'https://github.com/public-apis/public-apis',cat:'code',desc:'Curated list of 1,400+ free public APIs',fav:false},
-  {id:'135',name:'Learn X in Y',url:'https://learnxinyminutes.com',cat:'code',desc:'Quick syntax cheat sheets for 50+ languages',fav:false},
-  {id:'136',name:'DevHints',url:'https://devhints.io',cat:'code',desc:'Beautiful cheat sheets for JS, Python, Git',fav:false},
-  {id:'137',name:'Go by Example',url:'https://gobyexample.com',cat:'code',desc:'Learn Go with runnable, annotated examples',fav:false},
-  {id:'138',name:'Rust by Example',url:'https://doc.rust-lang.org/rust-by-example',cat:'code',desc:'Learn Rust with interactive examples',fav:false},
-  // Python
-  {id:'139',name:'Real Python',url:'https://realpython.com',cat:'py',desc:'In-depth Python tutorials + projects (free articles)',fav:false},
-  {id:'140',name:'Automate the Boring Stuff',url:'https://automatetheboringstuff.com',cat:'py',desc:'Learn Python by automating real tasks (free book)',fav:true},
-  {id:'141',name:'LearnPython.org',url:'https://learnpython.org',cat:'py',desc:'Interactive Python lessons in browser',fav:false},
-  {id:'142',name:'Kaggle Python',url:'https://kaggle.com/learn/python',cat:'py',desc:'Python for data science + ML (free micro-courses)',fav:false},
-  {id:'143',name:'PyBites',url:'https://pybites.eu',cat:'py',desc:'Python challenges + code reviews (free tier)',fav:false},
-  {id:'144',name:'CheckiO',url:'https://checkio.org',cat:'py',desc:'Learn Python/TypeScript via gamified adventures',fav:false},
-  {id:'145',name:'Edabit',url:'https://edabit.com',cat:'py',desc:'Bite-sized coding challenges (free tier)',fav:false},
-  {id:'146',name:'CoderPad',url:'https://coderpad.io',cat:'py',desc:'Practice coding interviews in browser (free sandbox)',fav:false},
-  {id:'147',name:'PythonTutor',url:'https://pythontutor.com',cat:'py',desc:'Visualize code execution step-by-step',fav:false},
-  // Cloud & DevOps
-  {id:'148',name:'Oracle Cloud Free',url:'https://oracle.com/cloud/free',cat:'cloud',desc:'Always-free ARM instances + 200€ credit',fav:true},
-  {id:'149',name:'Fly.io',url:'https://fly.io',cat:'cloud',desc:'Deploy apps close to users globally (free tier)',fav:false},
-  {id:'150',name:'Railway',url:'https://railway.app',cat:'cloud',desc:'Deploy with Git push + free $5 credits/month',fav:false},
-  {id:'151',name:'Neon',url:'https://neon.tech',cat:'cloud',desc:'Serverless Postgres with branching (free tier)',fav:false},
-  // Productivity
-  {id:'152',name:'Notion',url:'https://notion.so',cat:'prod',desc:'All-in-one notes, tasks, databases, wiki',fav:true},
-  {id:'153',name:'Obsidian',url:'https://obsidian.md',cat:'prod',desc:'Local Markdown knowledge base with graph view',fav:true},
-  {id:'154',name:'Logseq',url:'https://logseq.com',cat:'prod',desc:'Open-source, privacy-first outliner + knowledge graph',fav:false},
-  {id:'155',name:'AnkiWeb',url:'https://apps.ankiweb.net',cat:'prod',desc:'Spaced repetition flashcards (free desktop + Android)',fav:false},
-  {id:'156',name:'Zotero',url:'https://zotero.org',cat:'prod',desc:'Free research paper manager + citation tool',fav:false},
-  // Design
-  {id:'157',name:'Figma',url:'https://figma.com',cat:'design',desc:'Professional UI/UX design + prototyping (free tier)',fav:true},
-  {id:'158',name:'Canva',url:'https://canva.com',cat:'design',desc:'Drag-and-drop designs: PPTs, social media, resumes',fav:false},
-  {id:'159',name:'Photopea',url:'https://photopea.com',cat:'design',desc:'Free browser-based Photoshop alternative',fav:true},
-  {id:'160',name:'Excalidraw',url:'https://excalidraw.com',cat:'design',desc:'Hand-drawn style diagrams + architecture sketches',fav:true},
-  {id:'161',name:'tldraw',url:'https://tldraw.com',cat:'design',desc:'Infinite canvas for brainstorming + wireframing',fav:false},
-  // Web & API Tools
-  {id:'162',name:'Hoppscotch',url:'https://hoppscotch.io',cat:'web',desc:'Open-source, web-based API tester (Postman alternative)',fav:true},
-  {id:'163',name:'Webhook.site',url:'https://webhook.site',cat:'web',desc:'Instant unique URL to test webhooks, HTTP requests',fav:false},
-  {id:'164',name:'RequestBin',url:'https://requestbin.com',cat:'web',desc:'Inspect HTTP requests sent to a temporary endpoint',fav:false},
-  {id:'165',name:'JSONPlaceholder',url:'https://jsonplaceholder.typicode.com',cat:'web',desc:'Fake online REST API for testing + prototyping',fav:false},
-  {id:'166',name:'MockAPI',url:'https://mockapi.io',cat:'web',desc:'Create custom mock APIs with fake data (free tier)',fav:false},
-  // India-Friendly
-  {id:'167',name:'e-Yantra',url:'https://e-yantra.org',cat:'india',desc:'Free robotics + embedded systems courses (IIT Bombay)',fav:false},
-  {id:'168',name:'Virtual Labs',url:'https://vlab.co.in',cat:'india',desc:'Free remote computer science labs (MHRD, India)',fav:false},
-  {id:'169',name:'Spoken Tutorial',url:'https://spoken-tutorial.org',cat:'india',desc:'Free video tutorials for FOSS tools (IIT Bombay)',fav:false},
-  {id:'170',name:'NPTEL Archive',url:'https://nptel.ac.in/courses',cat:'india',desc:'Download NPTEL courses for offline learning',fav:false},
-  {id:'171',name:'SWAYAM Prabha',url:'https://swayamprabha.gov.in',cat:'india',desc:'32 free educational TV channels (DTH + online)',fav:false},
-  // Career
-  {id:'172',name:'LinkedIn Learning',url:'https://linkedin.com/learning',cat:'career',desc:'Free courses via many public libraries',fav:false},
-  {id:'173',name:'edX Audit Mode',url:'https://edx.org',cat:'career',desc:'Audit Harvard, MIT, Berkeley courses for free',fav:true},
-  {id:'174',name:'ScholarshipPortal',url:'https://scholarshipportal.com',cat:'career',desc:'Find scholarships for studying abroad (free search)',fav:false},
-  {id:'175',name:'DAAD India',url:'https://daad.in',cat:'career',desc:'Scholarships + info for studying in Germany (free)',fav:false},
-  {id:'176',name:'Erasmus+',url:'https://erasmus-plus.ec.europa.eu',cat:'career',desc:'EU student exchange + scholarship opportunities',fav:false},
-  // Wallpaper
-  {id:'177',name:'MoeWalls',url:'https://moewalls.com',cat:'wall',desc:'Anime wallpapers in HD/4K',fav:false},
-  {id:'178',name:'Unsplash',url:'https://unsplash.com',cat:'wall',desc:'4M+ stunning free high-res photos',fav:true},
-  {id:'179',name:'Pexels',url:'https://pexels.com',cat:'wall',desc:'Free stock photos + videos',fav:false},
-  {id:'180',name:'Coolors',url:'https://coolors.co',cat:'wall',desc:'Generate perfect color palettes instantly',fav:false},
+  {id:'71',name:'MindGrasp',url:'https://mindgrasp.ai',cat:'ai',desc:'AI study helper: summarize, quiz, notes',fav:false},
+  {id:'72',name:'FlexClip BG',url:'https://www.flexclip.com/ai/video-background-remover',cat:'ai',desc:'Remove video backgrounds with AI',fav:false},
+  {id:'73',name:'MagicHour',url:'https://magichour.ai',cat:'ai',desc:'AI video generation & editing',fav:false},
+  {id:'74',name:'SkyReels',url:'https://skyreels.ai',cat:'ai',desc:'Create AI-powered short videos',fav:false},
+  {id:'75',name:'Rosebud',url:'https://rosebud.ai',cat:'ai',desc:'AI game/video maker for creators',fav:false},
+  {id:'76',name:'Wegic AI',url:'https://wegic.ai',cat:'ai',desc:'Build websites using AI prompts',fav:false},
+  {id:'77',name:'ChatEdu',url:'https://chatedu.io',cat:'ai',desc:'AI tutor for learning subjects',fav:false},
+  {id:'78',name:'FMHY',url:'https://fmhy.net',cat:'ai',desc:'🔥 MASTER HUB: Free resources for all',fav:true},
+  {id:'79',name:'Emergent AI',url:'https://app.emergent.sh',cat:'ai',desc:'Build full-stack apps via chat — no code',fav:false},
+  {id:'80',name:'LLM Apps',url:'https://github.com/Shubhamsaboo/awesome-llm-apps',cat:'ai',desc:'Curated 100+ open-source AI/LLM projects',fav:false},
+  {id:'81',name:'Arena AI',url:'https://arena.ai',cat:'ai',desc:'Compare & benchmark AI models',fav:false},
+  {id:'82',name:'Yupp AI',url:'https://yupp.ai',cat:'ai',desc:'AI assistant for notes, summaries, learning',fav:false},
+  {id:'83',name:'AnimeDekho',url:'https://animedekho.in/home',cat:'ent',desc:'Stream anime free (India-friendly)',fav:false},
+  {id:'84',name:'IMDB Movies',url:'https://imdb.com/chart/top',cat:'ent',desc:'Top-rated movies of all time',fav:false},
+  {id:'85',name:'IMDB TV',url:'https://imdb.com/chart/toptv',cat:'ent',desc:'Top-rated TV shows',fav:false},
+  {id:'86',name:'Letterboxd',url:'https://letterboxd.com',cat:'ent',desc:'Track, rate & review movies you watch',fav:false},
+  {id:'87',name:'Serializd',url:'https://serializd.com',cat:'ent',desc:'Letterboxd for TV series',fav:false},
+  {id:'88',name:'MyAnimeList',url:'https://myanimelist.net',cat:'ent',desc:'Track anime, discover new shows',fav:false},
+  {id:'89',name:'Radio Garden',url:'https://radio.garden',cat:'ent',desc:'Listen to live radio stations worldwide',fav:false},
+  {id:'90',name:'MotionBGs',url:'https://motionbgs.com',cat:'ent',desc:'Free motion backgrounds for videos',fav:false},
+  {id:'91',name:'PlayPhrase',url:'https://playphrase.me',cat:'ent',desc:'Search phrase → instantly play movie clips',fav:false},
+  {id:'92',name:'MyInstants',url:'https://myinstants.com',cat:'ent',desc:'Play meme sounds & viral audio clips',fav:false},
+  {id:'93',name:'Freesound',url:'https://freesound.org',cat:'ent',desc:'Free Creative Commons audio samples',fav:false},
+  {id:'94',name:'ZapSplat',url:'https://zapsplat.com',cat:'ent',desc:'Free SFX for videos, games, podcasts',fav:false},
+  {id:'95',name:'Mixkit',url:'https://mixkit.co',cat:'ent',desc:'Free music + SFX + stock videos',fav:false},
+  {id:'96',name:'Pixabay Audio',url:'https://pixabay.com/sound-effects',cat:'ent',desc:'Royalty-free music & sound effects',fav:false},
+  {id:'97',name:'Windy',url:'https://windy.com',cat:'life',desc:'Live weather maps, wind, rain forecast',fav:false},
+  {id:'98',name:'BuildCores',url:'https://buildcores.com',cat:'life',desc:'Plan PC builds + check part compatibility',fav:false},
+  {id:'99',name:'HackTheMenu',url:'https://hackthemenu.com',cat:'life',desc:'Fast food secret menus & deals',fav:false},
+  {id:'100',name:'FlightRadar24',url:'https://flightradar24.com',cat:'life',desc:'Track any plane in real-time worldwide',fav:false},
+  {id:'101',name:'Wolfram Alpha',url:'https://wolframalpha.com',cat:'life',desc:'Computational knowledge engine (free tier)',fav:false},
+  {id:'102',name:'Exercism',url:'https://exercism.org',cat:'code',desc:'Practice coding + get mentor feedback (100% free)',fav:false},
+  {id:'103',name:'freeCodeCamp',url:'https://freecodecamp.org',cat:'code',desc:'Free full-stack coding curriculum',fav:true},
+  {id:'104',name:'LeetCode',url:'https://leetcode.com',cat:'code',desc:'Practice coding interview questions',fav:true},
+  {id:'105',name:'GitHub',url:'https://github.com',cat:'code',desc:'Host code, collaborate, build portfolio',fav:true},
+  {id:'106',name:'Stack Overflow',url:'https://stackoverflow.com',cat:'code',desc:'Get coding answers from developers worldwide',fav:true},
+  {id:'107',name:'MDN Web Docs',url:'https://developer.mozilla.org',cat:'code',desc:'Official HTML/CSS/JS reference',fav:true},
+  {id:'108',name:'DevDocs',url:'https://devdocs.io',cat:'code',desc:'All programming docs in one searchable UI',fav:true},
+  {id:'109',name:'Roadmap.sh',url:'https://roadmap.sh',cat:'code',desc:'Visual learning paths for developers',fav:true},
+  {id:'110',name:'CodePen',url:'https://codepen.io',cat:'code',desc:'Front-end playground + inspiration',fav:false},
+  {id:'111',name:'Replit',url:'https://replit.com',cat:'code',desc:'Code, run, collaborate in browser',fav:false},
+  {id:'112',name:'QuickRef',url:'https://quickref.me',cat:'code',desc:'Minimalist programming cheat sheets',fav:false},
+  {id:'113',name:'Regex101',url:'https://regex101.com',cat:'code',desc:'Test & debug regex with explanations',fav:false},
+  {id:'114',name:'GeeksforGeeks',url:'https://geeksforgeeks.org',cat:'code',desc:'Coding tutorials + interview prep',fav:false},
+  {id:'115',name:'HackerRank',url:'https://hackerrank.com',cat:'code',desc:'Coding challenges + company practice',fav:false},
+  {id:'116',name:'CodeChef',url:'https://codechef.com',cat:'code',desc:'Competitive programming (Indian platform)',fav:false},
+  {id:'117',name:'W3Schools',url:'https://w3schools.com',cat:'code',desc:'Web dev tutorials + live code editor',fav:false},
+  {id:'118',name:'The Odin Project',url:'https://theodinproject.com',cat:'code',desc:'Full-stack open-source curriculum',fav:false},
+  {id:'119',name:'Public APIs',url:'https://github.com/public-apis/public-apis',cat:'code',desc:'Curated list of 1,400+ free public APIs',fav:false},
+  {id:'120',name:'DevHints',url:'https://devhints.io',cat:'code',desc:'Beautiful cheat sheets for JS, Python, Git',fav:false},
+  {id:'121',name:'Learn X in Y',url:'https://learnxinyminutes.com',cat:'code',desc:'Quick syntax cheat sheets for 50+ languages',fav:false},
+  {id:'122',name:'Go by Example',url:'https://gobyexample.com',cat:'code',desc:'Learn Go with runnable annotated examples',fav:false},
+  {id:'123',name:'Rust by Example',url:'https://doc.rust-lang.org/rust-by-example',cat:'code',desc:'Learn Rust with interactive examples',fav:false},
+  {id:'124',name:'Real Python',url:'https://realpython.com',cat:'py',desc:'In-depth Python tutorials + projects',fav:false},
+  {id:'125',name:'Automate the Boring Stuff',url:'https://automatetheboringstuff.com',cat:'py',desc:'Learn Python by automating real tasks (free book)',fav:true},
+  {id:'126',name:'LearnPython.org',url:'https://learnpython.org',cat:'py',desc:'Interactive Python lessons in browser',fav:false},
+  {id:'127',name:'Kaggle Python',url:'https://kaggle.com/learn/python',cat:'py',desc:'Python for data science + ML (free)',fav:false},
+  {id:'128',name:'PyBites',url:'https://pybites.eu',cat:'py',desc:'Python challenges + code reviews',fav:false},
+  {id:'129',name:'CheckiO',url:'https://checkio.org',cat:'py',desc:'Learn Python via gamified adventures',fav:false},
+  {id:'130',name:'PythonTutor',url:'https://pythontutor.com',cat:'py',desc:'Visualize code execution step-by-step',fav:false},
+  {id:'131',name:'Oracle Cloud Free',url:'https://oracle.com/cloud/free',cat:'cloud',desc:'Always-free ARM instances + 200€ credit',fav:true},
+  {id:'132',name:'Fly.io',url:'https://fly.io',cat:'cloud',desc:'Deploy apps close to users globally',fav:false},
+  {id:'133',name:'Railway',url:'https://railway.app',cat:'cloud',desc:'Deploy with Git push + $5 credits/month',fav:false},
+  {id:'134',name:'Neon',url:'https://neon.tech',cat:'cloud',desc:'Serverless Postgres with branching (free tier)',fav:false},
+  {id:'135',name:'Notion',url:'https://notion.so',cat:'prod',desc:'All-in-one notes, tasks, databases, wiki',fav:true},
+  {id:'136',name:'Obsidian',url:'https://obsidian.md',cat:'prod',desc:'Local Markdown knowledge base with graph view',fav:true},
+  {id:'137',name:'Logseq',url:'https://logseq.com',cat:'prod',desc:'Open-source, privacy-first outliner',fav:false},
+  {id:'138',name:'AnkiWeb',url:'https://apps.ankiweb.net',cat:'prod',desc:'Spaced repetition flashcards (free)',fav:false},
+  {id:'139',name:'Zotero',url:'https://zotero.org',cat:'prod',desc:'Free research paper manager',fav:false},
+  {id:'140',name:'Figma',url:'https://figma.com',cat:'design',desc:'Professional UI/UX design + prototyping',fav:true},
+  {id:'141',name:'Canva',url:'https://canva.com',cat:'design',desc:'Drag-and-drop designs for everything',fav:false},
+  {id:'142',name:'Photopea',url:'https://photopea.com',cat:'design',desc:'Free browser-based Photoshop alternative',fav:true},
+  {id:'143',name:'Excalidraw',url:'https://excalidraw.com',cat:'design',desc:'Hand-drawn style diagrams + sketches',fav:true},
+  {id:'144',name:'tldraw',url:'https://tldraw.com',cat:'design',desc:'Infinite canvas for brainstorming',fav:false},
+  {id:'145',name:'Hoppscotch',url:'https://hoppscotch.io',cat:'web',desc:'Open-source web-based API tester',fav:true},
+  {id:'146',name:'Webhook.site',url:'https://webhook.site',cat:'web',desc:'Instant unique URL to test webhooks',fav:false},
+  {id:'147',name:'RequestBin',url:'https://requestbin.com',cat:'web',desc:'Inspect HTTP requests sent to endpoint',fav:false},
+  {id:'148',name:'JSONPlaceholder',url:'https://jsonplaceholder.typicode.com',cat:'web',desc:'Fake online REST API for testing',fav:false},
+  {id:'149',name:'MockAPI',url:'https://mockapi.io',cat:'web',desc:'Create custom mock APIs with fake data',fav:false},
+  {id:'150',name:'e-Yantra',url:'https://e-yantra.org',cat:'india',desc:'Free robotics + embedded systems (IIT Bombay)',fav:false},
+  {id:'151',name:'Virtual Labs',url:'https://vlab.co.in',cat:'india',desc:'Free remote computer science labs (India)',fav:false},
+  {id:'152',name:'Spoken Tutorial',url:'https://spoken-tutorial.org',cat:'india',desc:'Free video tutorials for FOSS tools (IIT)',fav:false},
+  {id:'153',name:'NPTEL Archive',url:'https://nptel.ac.in/courses',cat:'india',desc:'Download NPTEL courses for offline learning',fav:false},
+  {id:'154',name:'SWAYAM Prabha',url:'https://swayamprabha.gov.in',cat:'india',desc:'32 free educational TV channels',fav:false},
+  {id:'155',name:'LinkedIn Learning',url:'https://linkedin.com/learning',cat:'career',desc:'Free courses via public libraries',fav:false},
+  {id:'156',name:'edX Audit Mode',url:'https://edx.org',cat:'career',desc:'Audit Harvard, MIT, Berkeley free',fav:true},
+  {id:'157',name:'ScholarshipPortal',url:'https://scholarshipportal.com',cat:'career',desc:'Find scholarships for studying abroad',fav:false},
+  {id:'158',name:'DAAD India',url:'https://daad.in',cat:'career',desc:'Scholarships + studying in Germany info',fav:false},
+  {id:'159',name:'Erasmus+',url:'https://erasmus-plus.ec.europa.eu',cat:'career',desc:'EU student exchange + scholarships',fav:false},
+  {id:'160',name:'Unsplash',url:'https://unsplash.com',cat:'wall',desc:'4M+ stunning free high-res photos',fav:true},
+  {id:'161',name:'Pexels',url:'https://pexels.com',cat:'wall',desc:'Free stock photos + videos',fav:false},
+  {id:'162',name:'MoeWalls',url:'https://moewalls.com',cat:'wall',desc:'Anime wallpapers in HD/4K',fav:false},
+  {id:'163',name:'Coolors',url:'https://coolors.co',cat:'wall',desc:'Generate perfect color palettes instantly',fav:false},
 ];
-
-// ═══════════════════════════
-// ⚙️  SUPABASE CONFIG
-// Paste your values from:
-// supabase.com → Project Settings → API
-// ═══════════════════════════
-const SUPABASE_URL  = 'https://isplnzkdnwzvjjajejhp.supabase.co';
-const SUPABASE_KEY  = 'sb_publishable_5AGW_vB7RlLEI9eRHpBw_w_m-m9LKdv';
-
-const SB_REST = `${SUPABASE_URL}/rest/v1`;
-const SB_HEADERS = {
-  'apikey': SUPABASE_KEY,
-  'Authorization': `Bearer ${SUPABASE_KEY}`,
-  'Content-Type': 'application/json',
-};
-
-const SB = {
-  async query(method, body){
-    const res = await fetch(`${SB_REST}/links?order=created_at.asc`, {
-      method, headers:{
-        ...SB_HEADERS,
-        'Prefer': method==='POST' ? 'return=representation' : 'return=minimal'
-      }, body: body ? JSON.stringify(body) : undefined
-    });
-    if(!res.ok) throw new Error(await res.text());
-    return method==='GET' ? res.json() : res;
-  },
-  getAll(){ return this.query('GET') },
-  insert(row){ return this.query('POST', row) },
-  async update(id, patch){
-    const res = await fetch(`${SB_REST}/links?id=eq.${id}`, {
-      method:'PATCH', headers:{...SB_HEADERS,'Prefer':'return=minimal'},
-      body: JSON.stringify(patch)
-    });
-    if(!res.ok) throw new Error(await res.text());
-  },
-  async remove(id){
-    const res = await fetch(`${SB_REST}/links?id=eq.${id}`, {
-      method:'DELETE', headers: SB_HEADERS
-    });
-    if(!res.ok) throw new Error(await res.text());
-  }
-};
 
 // ═══════════════════════════
 // STATE
 // ═══════════════════════════
 let links = [];
-let dbReady = false;   // true once Supabase loaded
+let token = sessionStorage.getItem('lv_token') || null;
+let isAdmin = false;
 let currentCat = null;
 let currentSort = 'default';
 let editingId = null;
 
-// Seed default links into Supabase on first load
-async function seedIfEmpty(remoteLinks){
-  if(remoteLinks.length > 0) return;
-  showToast('⏳ First launch — seeding your vault…');
-  // Insert in batches of 20 to avoid URL length limits
-  const batch = 20;
-  for(let i=0;i<ALL_LINKS.length;i+=batch){
-    await SB.query('POST', ALL_LINKS.slice(i,i+batch));
+// ═══════════════════════════
+// API CALLS → Netlify Functions
+// ═══════════════════════════
+const API = {
+  headers(extra={}){
+    const h = {'Content-Type':'application/json',...extra};
+    if(token) h['Authorization'] = `Bearer ${token}`;
+    return h;
+  },
+  async getLinks(){
+    const res = await fetch('/.netlify/functions/links');
+    if(!res.ok) throw new Error('Failed to load links');
+    return res.json();
+  },
+  async addLink(link){
+    const res = await fetch('/.netlify/functions/add',{
+      method:'POST', headers:this.headers(), body:JSON.stringify(link)
+    });
+    if(res.status===401) throw new Error('SESSION_EXPIRED');
+    if(!res.ok) throw new Error('Failed to add link');
+    return res.json();
+  },
+  async updateLink(id, patch){
+    const res = await fetch('/.netlify/functions/update',{
+      method:'PATCH', headers:this.headers(), body:JSON.stringify({id,...patch})
+    });
+    if(res.status===401) throw new Error('SESSION_EXPIRED');
+    if(!res.ok) throw new Error('Failed to update link');
+  },
+  async deleteLink(id){
+    const res = await fetch('/.netlify/functions/delete',{
+      method:'DELETE', headers:this.headers(), body:JSON.stringify({id})
+    });
+    if(res.status===401) throw new Error('SESSION_EXPIRED');
+    if(!res.ok) throw new Error('Failed to delete link');
+  },
+  async login(username, password){
+    const res = await fetch('/.netlify/functions/login',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username, password})
+    });
+    return res.json();
+  },
+  async seedLinks(defaultLinks){
+    // Insert all default links one batch at a time
+    for(let i=0;i<defaultLinks.length;i+=20){
+      const batch = defaultLinks.slice(i,i+20);
+      for(const link of batch){
+        await this.addLink(link);
+      }
+    }
   }
-  showToast('✅ Vault seeded with all 180 links!');
+};
+
+// ═══════════════════════════
+// AUTH
+// ═══════════════════════════
+function handleLoginClick(){
+  if(isAdmin){
+    // Logout
+    token=null; isAdmin=false;
+    sessionStorage.removeItem('lv_token');
+    updateAdminUI();
+    showToast('👋 Logged out');
+  } else {
+    openLoginModal();
+  }
 }
 
-async function loadFromSupabase(){
-  setLoadingState(true);
-  try {
-    const remote = await SB.getAll();
-    await seedIfEmpty(remote);
-    links = remote.length ? remote : ALL_LINKS;
-    dbReady = true;
+function openLoginModal(){
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').textContent='';
+  document.getElementById('loginOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('loginUser').focus(),100);
+}
+
+function closeLoginModal(e){
+  if(e.target===document.getElementById('loginOverlay'))
+    document.getElementById('loginOverlay').classList.remove('open');
+}
+
+async function submitLogin(){
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginSubmitBtn');
+
+  if(!username||!password){ errEl.textContent='Fill in both fields'; return; }
+
+  btn.textContent='Logging in…'; btn.disabled=true; errEl.textContent='';
+
+  try{
+    const data = await API.login(username, password);
+    if(data.ok){
+      token = data.token;
+      isAdmin = true;
+      sessionStorage.setItem('lv_token', token);
+      document.getElementById('loginOverlay').classList.remove('open');
+      updateAdminUI();
+      showToast('✅ Welcome back!');
+    } else {
+      errEl.textContent = '❌ ' + (data.message||'Invalid credentials');
+    }
   } catch(err){
-    console.warn('Supabase error, falling back to local data:', err);
-    links = JSON.parse(localStorage.getItem('lv_links')||'null') || ALL_LINKS;
-    showToast('⚠️ Offline mode — changes won\'t sync');
-    setDbBadge(false);
+    errEl.textContent = '❌ Network error. Try again.';
   }
-  setLoadingState(false);
-  setDbBadge(dbReady);
+  btn.textContent='Login'; btn.disabled=false;
+}
+
+function updateAdminUI(){
+  const app = document.getElementById('app');
+  const btn = document.getElementById('loginBtn');
+  if(isAdmin){
+    app.classList.add('is-admin');
+    btn.className='btn-login logged-in';
+    btn.innerHTML='✅ Logout';
+  } else {
+    app.classList.remove('is-admin');
+    btn.className='btn-login';
+    btn.innerHTML='🔑 Login';
+  }
+}
+
+function handleSessionExpired(){
+  token=null; isAdmin=false;
+  sessionStorage.removeItem('lv_token');
+  updateAdminUI();
+  showToast('⏰ Session expired — please login again');
+  openLoginModal();
+}
+
+// ═══════════════════════════
+// LOAD DATA
+// ═══════════════════════════
+async function loadLinks(){
+  setLoading(true);
+  try{
+    let remote = await API.getLinks();
+    // First time — seed default links
+    if(remote.length === 0){
+      showToast('⏳ First launch — seeding vault…');
+      await API.seedLinks(DEFAULT_LINKS);
+      remote = await API.getLinks();
+      showToast('✅ Vault ready with all links!');
+    }
+    links = remote;
+    setDbBadge(true);
+  } catch(err){
+    console.warn('API error, using defaults:', err);
+    links = DEFAULT_LINKS;
+    setDbBadge(false);
+    showToast('⚠️ Offline mode');
+  }
+  setLoading(false);
   renderHome();
 }
-
-function setLoadingState(on){
-  document.getElementById('loadingBar').style.display = on ? 'block' : 'none';
-}
-
-function setDbBadge(online){
-  const b = document.getElementById('dbBadge');
-  if(!b) return;
-  b.className = 'db-badge ' + (online ? 'online' : 'offline');
-  b.textContent = online ? '⬤ SUPABASE' : '⬤ LOCAL';
-  b.title = online ? 'Connected to Supabase — changes sync across devices' : 'Offline mode — data saved locally only';
-}
-
-// Local fallback save
-function saveLocal(){localStorage.setItem('lv_links',JSON.stringify(links))}
 
 // ═══════════════════════════
 // HOME
 // ═══════════════════════════
 function renderHome(){
-  // stats
   document.getElementById('s-total').textContent = links.length;
-  document.getElementById('s-cats').textContent = CATS.length;
   document.getElementById('s-favs').textContent = links.filter(l=>l.fav).length;
 
   const grid = document.getElementById('catsGrid');
   const q = document.getElementById('homeSearch').value.toLowerCase();
 
   if(q){
-    // global search across all links
     const results = links.filter(l=>
       l.name.toLowerCase().includes(q)||
       l.desc.toLowerCase().includes(q)||
       l.url.toLowerCase().includes(q)
     );
-    grid.innerHTML = '';
+    grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px';
     if(!results.length){
-      grid.innerHTML = '<div style="grid-column:1/-1;padding:60px 0;text-align:center;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">🔍</div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:var(--border)">NO RESULTS FOUND</div></div>';
+      grid.innerHTML=`<div class="empty-cat"><div class="empty-cat-icon">🔍</div><div class="empty-cat-txt">NO RESULTS FOUND</div></div>`;
       return;
     }
+    grid.innerHTML='';
     results.forEach((l,i)=>{
-      const cat = CATS.find(c=>c.id===l.cat)||{emoji:'🔗',name:'Misc',color:'#64748b'};
-      const card = document.createElement('div');
+      const cat=CATS.find(c=>c.id===l.cat)||{emoji:'🔗',name:'Misc',color:'#64748b'};
+      const card=document.createElement('div');
       card.className='link-card';
       card.style.setProperty('--cat-accent',cat.color);
       card.style.animationDelay=`${i*0.04}s`;
@@ -731,10 +725,11 @@ function renderHome(){
     return;
   }
 
+  grid.style.cssText='';
   grid.innerHTML='';
   CATS.forEach((cat,i)=>{
-    const count = links.filter(l=>l.cat===cat.id).length;
-    const card = document.createElement('div');
+    const count=links.filter(l=>l.cat===cat.id).length;
+    const card=document.createElement('div');
     card.className='cat-card';
     card.style.setProperty('--cat-accent',cat.color);
     card.style.animationDelay=`${i*0.05}s`;
@@ -754,45 +749,30 @@ function renderHome(){
 
 function handleHomeSearch(q){
   renderHome();
-  // If searching, switch to link-card grid styling
-  const wrap = document.getElementById('catsGrid');
-  if(q.trim()){
-    wrap.style.display='grid';
-    wrap.style.gridTemplateColumns='repeat(auto-fill,minmax(300px,1fr))';
-    wrap.style.gap='16px';
-  } else {
-    wrap.style.display='';
-    wrap.style.gridTemplateColumns='';
-    wrap.style.gap='';
-  }
 }
 
 // ═══════════════════════════
 // NAVIGATION
 // ═══════════════════════════
 function openCat(id){
-  currentCat = id;
-  currentSort = 'default';
+  currentCat=id; currentSort='default';
   document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort==='default'));
   document.getElementById('catSearch').value='';
-
-  const cat = CATS.find(c=>c.id===id);
+  const cat=CATS.find(c=>c.id===id);
   document.getElementById('cpEmoji').textContent=cat.emoji;
   document.getElementById('cpName').textContent=cat.name;
   document.getElementById('catpage').style.setProperty('--cat-accent',cat.color);
-
   renderCatLinks();
-
-  const home = document.getElementById('home');
-  const page = document.getElementById('catpage');
+  const home=document.getElementById('home');
+  const page=document.getElementById('catpage');
   home.classList.add('slide-left');
   page.classList.remove('hidden');
   setTimeout(()=>home.classList.add('hidden'),500);
 }
 
 function goHome(){
-  const home = document.getElementById('home');
-  const page = document.getElementById('catpage');
+  const home=document.getElementById('home');
+  const page=document.getElementById('catpage');
   home.classList.remove('hidden','slide-left');
   page.classList.add('hidden');
   renderHome();
@@ -802,25 +782,21 @@ function goHome(){
 // CATEGORY PAGE
 // ═══════════════════════════
 function renderCatLinks(){
-  const cat = CATS.find(c=>c.id===currentCat);
-  const q = document.getElementById('catSearch').value.toLowerCase();
-  let items = links.filter(l=>l.cat===currentCat);
-
-  if(q) items = items.filter(l=>l.name.toLowerCase().includes(q)||l.desc.toLowerCase().includes(q)||l.url.toLowerCase().includes(q));
-
-  if(currentSort==='az') items = [...items].sort((a,b)=>a.name.localeCompare(b.name));
-  else if(currentSort==='favs') items = [...items].sort((a,b)=>Number(b.fav)-Number(a.fav));
-
+  const cat=CATS.find(c=>c.id===currentCat);
+  const q=document.getElementById('catSearch').value.toLowerCase();
+  let items=links.filter(l=>l.cat===currentCat);
+  if(q) items=items.filter(l=>l.name.toLowerCase().includes(q)||l.desc.toLowerCase().includes(q)||l.url.toLowerCase().includes(q));
+  if(currentSort==='az') items=[...items].sort((a,b)=>a.name.localeCompare(b.name));
+  else if(currentSort==='favs') items=[...items].sort((a,b)=>Number(b.fav)-Number(a.fav));
   document.getElementById('cpCount').textContent=`${items.length} link${items.length!==1?'s':''}`;
-
-  const grid = document.getElementById('linksGrid');
+  const grid=document.getElementById('linksGrid');
   if(!items.length){
-    grid.innerHTML=`<div class="empty-cat" style="grid-column:1/-1"><div class="empty-cat-icon">🔍</div><div class="empty-cat-txt">NO LINKS FOUND</div></div>`;
+    grid.innerHTML=`<div class="empty-cat"><div class="empty-cat-icon">🔍</div><div class="empty-cat-txt">NO LINKS FOUND</div></div>`;
     return;
   }
   grid.innerHTML='';
   items.forEach((l,i)=>{
-    const card = document.createElement('div');
+    const card=document.createElement('div');
     card.className='link-card';
     card.style.setProperty('--cat-accent',cat.color);
     card.style.animationDelay=`${i*0.04}s`;
@@ -834,181 +810,188 @@ function linkCardHTML(l,cat){
   return `
     <div class="lc-top">
       <div class="lc-name">${esc(l.name)}</div>
-      <button class="lc-fav" onclick="toggleFav('${l.id}',event)" title="${l.fav?'Remove from favorites':'Add to favorites'}">${l.fav?'⭐':'☆'}</button>
+      <button class="lc-fav admin-only" onclick="toggleFav('${l.id}',event)" title="${l.fav?'Remove favorite':'Add favorite'}">${l.fav?'⭐':'☆'}</button>
+      ${!isAdmin&&l.fav?'<span style="font-size:16px">⭐</span>':''}
     </div>
     <div class="lc-desc">${esc(l.desc)}</div>
     <div class="lc-url-row">
       <a href="${l.url}" target="_blank" rel="noopener" class="lc-url" title="${l.url}">${domain}</a>
       <div class="lc-actions">
         <button class="lc-btn" onclick="copyLink('${l.url}',event)" title="Copy URL">⧉</button>
-        <button class="lc-btn" onclick="editLink('${l.id}',event)" title="Edit">✏️</button>
-        <button class="lc-btn" onclick="deleteLink('${l.id}',event)" title="Delete">🗑</button>
+        <button class="lc-btn admin-only" onclick="editLink('${l.id}',event)" title="Edit">✏️</button>
+        <button class="lc-btn admin-only" onclick="deleteLink('${l.id}',event)" title="Delete">🗑</button>
       </div>
     </div>`;
 }
 
-function setSort(type, el){
+function setSort(type,el){
   currentSort=type;
   document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b===el));
   renderCatLinks();
 }
 
 // ═══════════════════════════
-// 🔑 PASSWORD GATE
-// Change this to your own password
-// ═══════════════════════════
-const VAULT_PASSWORD = 'auguxt2025';  // ← change this to your own password
-let isAdmin = sessionStorage.getItem('lv_admin') === 'true';
-
-function checkAdmin(){
-  if(isAdmin) return true;
-  const pw = prompt('🔐 Enter password to make changes:');
-  if(pw === VAULT_PASSWORD){
-    isAdmin = true;
-    sessionStorage.setItem('lv_admin','true');
-    showToast('✅ Admin access granted');
-    return true;
-  }
-  showToast('❌ Wrong password');
-  return false;
-}
-
-// ═══════════════════════════
 // ACTIONS
 // ═══════════════════════════
-async function toggleFav(id, e){
+async function toggleFav(id,e){
   e.stopPropagation();
-  if(!checkAdmin()) return;
-  const l = links.find(x=>x.id===id);
+  const l=links.find(x=>x.id===id);
   if(!l) return;
   l.fav=!l.fav;
-  renderCatLinks(); renderHome(); // optimistic UI
+  renderCatLinks(); renderHome();
   showToast(l.fav?'⭐ Added to favorites':'Removed from favorites');
-  if(dbReady){ try{ await SB.update(id,{fav:l.fav}) }catch(err){ l.fav=!l.fav; renderCatLinks(); showToast('❌ Sync failed') } }
-  else saveLocal();
+  try{
+    await API.updateLink(id,{fav:l.fav});
+  } catch(err){
+    if(err.message==='SESSION_EXPIRED'){ l.fav=!l.fav; handleSessionExpired(); }
+    else { l.fav=!l.fav; renderCatLinks(); showToast('❌ Sync failed'); }
+  }
 }
 
-function copyLink(url, e){
+function copyLink(url,e){
   e.stopPropagation();
   navigator.clipboard.writeText(url).then(()=>showToast('✓ Copied to clipboard'));
 }
 
-function editLink(id, e){
+function editLink(id,e){
   e.stopPropagation();
-  if(!checkAdmin()) return;
-  const l = links.find(x=>x.id===id);
+  const l=links.find(x=>x.id===id);
   if(!l) return;
   editingId=id;
-  document.getElementById('modalTitle').textContent='EDIT LINK';
+  document.getElementById('linkModalTitle').textContent='EDIT LINK';
   document.getElementById('fName').value=l.name;
   document.getElementById('fUrl').value=l.url;
   document.getElementById('fCat').value=l.cat;
   document.getElementById('fDesc').value=l.desc;
-  document.getElementById('overlay').classList.add('open');
+  document.getElementById('linkOverlay').classList.add('open');
 }
 
-async function deleteLink(id, e){
+async function deleteLink(id,e){
   e.stopPropagation();
-  if(!checkAdmin()) return;
   if(!confirm('Delete this link?')) return;
   const backup=[...links];
   links=links.filter(x=>x.id!==id);
-  renderCatLinks(); renderHome(); // optimistic UI
+  renderCatLinks(); renderHome();
   showToast('🗑 Link deleted');
-  if(dbReady){ try{ await SB.remove(id) }catch(err){ links=backup; renderCatLinks(); showToast('❌ Delete failed') } }
-  else saveLocal();
+  try{
+    await API.deleteLink(id);
+  } catch(err){
+    if(err.message==='SESSION_EXPIRED'){ links=backup; handleSessionExpired(); }
+    else { links=backup; renderCatLinks(); showToast('❌ Delete failed'); }
+  }
 }
 
 // ═══════════════════════════
-// MODAL
+// LINK MODAL
 // ═══════════════════════════
-function openModal(preCat){
-  if(!checkAdmin()) return;
+function openLinkModal(preCat){
   editingId=null;
-  document.getElementById('modalTitle').textContent='ADD LINK';
+  document.getElementById('linkModalTitle').textContent='ADD LINK';
   document.getElementById('fName').value='';
   document.getElementById('fUrl').value='';
   document.getElementById('fCat').value=preCat||'';
   document.getElementById('fDesc').value='';
-  document.getElementById('overlay').classList.add('open');
+  document.getElementById('linkOverlay').classList.add('open');
 }
-function closeModal(){document.getElementById('overlay').classList.remove('open')}
-function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal()}
+
+function closeLinkModal(e){
+  if(e.target===document.getElementById('linkOverlay'))
+    document.getElementById('linkOverlay').classList.remove('open');
+}
 
 async function saveLink(){
   const name=document.getElementById('fName').value.trim();
   const url=document.getElementById('fUrl').value.trim();
   const cat=document.getElementById('fCat').value;
   const desc=document.getElementById('fDesc').value.trim();
-  if(!name||!url||!cat){showToast('⚠️ Fill in required fields');return}
+  if(!name||!url||!cat){ showToast('⚠️ Fill in all required fields'); return; }
 
-  const btn = document.querySelector('.btn-save');
+  const btn=document.getElementById('linkSaveBtn');
   btn.textContent='Saving…'; btn.disabled=true;
 
   try{
     if(editingId){
-      if(dbReady) await SB.update(editingId,{name,url,cat,desc});
+      await API.updateLink(editingId,{name,url,cat,desc});
       const l=links.find(x=>x.id===editingId);
       Object.assign(l,{name,url,cat,desc});
       showToast('✓ Link updated');
     } else {
       const newLink={id:Date.now().toString(),name,url,cat,desc,fav:false};
-      if(dbReady){
-        const res = await fetch(`${SB_REST}/links`, {
-          method:'POST',
-          headers:{...SB_HEADERS,'Prefer':'return=representation'},
-          body:JSON.stringify(newLink)
-        });
-        const saved = await res.json();
-        links.push(Array.isArray(saved)?saved[0]:saved);
-      } else {
-        links.push(newLink);
-        saveLocal();
-      }
+      const saved=await API.addLink(newLink);
+      links.push(Array.isArray(saved)?saved[0]:saved);
       showToast('✓ Link added');
     }
-    if(!dbReady) saveLocal();
-    closeModal();
+    document.getElementById('linkOverlay').classList.remove('open');
     if(currentCat) renderCatLinks();
     renderHome();
   } catch(err){
-    showToast('❌ Save failed: '+err.message);
+    if(err.message==='SESSION_EXPIRED') handleSessionExpired();
+    else showToast('❌ '+err.message);
   }
   btn.textContent='Save Link'; btn.disabled=false;
 }
 
 // ═══════════════════════════
-// TOAST
+// HELPERS
 // ═══════════════════════════
+function setLoading(on){
+  document.getElementById('loadingBar').style.display=on?'block':'none';
+}
+
+function setDbBadge(online){
+  const b=document.getElementById('dbBadge');
+  b.className='db-badge '+(online?'online':'offline');
+  b.textContent=online?'⬤ CONNECTED':'⬤ OFFLINE';
+}
+
 let toastT;
 function showToast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
+  t.textContent=msg; t.classList.add('show');
   clearTimeout(toastT);
-  toastT=setTimeout(()=>t.classList.remove('show'),2200);
+  toastT=setTimeout(()=>t.classList.remove('show'),2500);
 }
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 // ═══════════════════════════
 // INIT
 // ═══════════════════════════
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-
-function initModal(){
+function initCategorySelect(){
   const sel=document.getElementById('fCat');
-  CATS.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=`${c.emoji} ${c.name}`;sel.appendChild(o)});
+  CATS.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.id; o.textContent=`${c.emoji} ${c.name}`;
+    sel.appendChild(o);
+  });
+}
+
+// Check if already logged in from previous session
+async function checkExistingSession(){
+  if(token){
+    // Verify token is still valid by trying a write check
+    isAdmin=true;
+    updateAdminUI();
+  }
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  initModal();
-  loadFromSupabase(); // loads from Supabase, falls back to local
+  initCategorySelect();
+  checkExistingSession();
+  loadLinks();
 });
 
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') closeModal();
+  if(e.key==='Escape'){
+    document.getElementById('loginOverlay').classList.remove('open');
+    document.getElementById('linkOverlay').classList.remove('open');
+  }
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){
     e.preventDefault();
     document.getElementById('homeSearch').focus();
+  }
+  if(e.key==='Enter'&&document.getElementById('loginOverlay').classList.contains('open')){
+    submitLogin();
   }
 });
 </script>
