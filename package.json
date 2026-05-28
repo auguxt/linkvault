@@ -1,0 +1,8 @@
+{
+  "name": "linkvault",
+  "version": "1.0.0",
+  "description": "Personal free resource link vault",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0"
+  }
+}
